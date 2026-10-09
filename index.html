@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sustainability Games Gallery</title>
+  <meta name="description" content="Play sustainability games made by University of St. Thomas capstone students.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="home">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20C4 11 9 5 20 4c-.6 10.5-6.8 16-16 16zM7 17.5l7-7 1 1-7 7z"/></svg></span>
+        <span class="brand-text"><strong>Sustainability Games</strong><span>Office of Sustainability · University of St. Thomas</span></span>
+      </a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <h1>Sustainability Starts With You</h1>
+      <p>Explore games created by students to make sustainability more interactive, engaging, and accessible.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="https://www.stthomas.edu/about/sustainability/osi/" target="_blank" rel="noopener">Office of Sustainability</a>
+        <a class="btn" href="about.html">About These Games</a>
+      </div>
+      <div class="toolbar" role="search">
+        <label class="search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+          <input id="search" type="search" placeholder="Search games by title" aria-label="Search games by title" autocomplete="off">
+        </label>
+        <select id="semester" class="select" aria-label="Filter by semester">
+          <option value="">All semesters</option>
+        </select>
+        <button id="clear" class="btn" type="button" hidden>Clear</button>
+      </div>
+    </div>
+  </section>
+
+  <main id="main">
+    <div class="container">
+      <p id="count" class="results-count" aria-live="polite">Loading games…</p>
+      <div id="results"></div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <img class="footer-logo" src="images/sustainable-st-thomas-logo.png" alt="Sustainable St. Thomas">
+      <span>&copy; 2026 Office of Sustainability, University of St. Thomas</span>
+      <span>Games made by CISC capstone students</span>
+    </div>
+  </footer>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+/* ==========================================================
+   Sustainability Games Gallery — styles
+   Brand colors live here. Swap them for the official UST
+   values from University Marketing when we have them.
+   ========================================================== */
+:root {
+  --purple: #510C76;
+  --purple-dark: #3A0857;
+  --lavender: #F3EDF7;
+  --lavender-2: #E7DDEF;
+  --green-img: #C9E0BE;     /* card image placeholder */
+  --ink: #1F1A24;
+  --muted: #5F5868;
+  --line: #E2DCE8;
+  --bg: #FAF9FB;
+  --white: #FFFFFF;
+  --radius: 14px;
+  --shadow: 0 2px 10px rgba(31, 26, 36, 0.07);
+  --shadow-hover: 0 10px 26px rgba(31, 26, 36, 0.12);
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --max: 1160px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--ink);
+  background: var(--bg);
+}
+img { max-width: 100%; display: block; }
+a { color: var(--purple); }
+:focus-visible { outline: 3px solid var(--purple); outline-offset: 2px; }
+.container { max-width: var(--max); margin: 0 auto; padding-inline: 20px; }
+.skip-link {
+  position: absolute; left: -999px; top: 8px;
+  background: var(--white); padding: 8px 12px; border-radius: 8px; z-index: 100;
+}
+.skip-link:focus { left: 8px; }
+
+/* ---------- Header ---------- */
+.site-header { background: var(--purple); color: var(--white); }
+.site-header .container {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; min-height: 68px; flex-wrap: wrap; padding-block: 10px;
+}
+.brand { display: flex; align-items: center; gap: 12px; color: var(--white); text-decoration: none; }
+.brand-mark {
+  width: 38px; height: 38px; border-radius: 10px; background: var(--white);
+  display: grid; place-items: center; flex: none;
+}
+.brand-mark svg { width: 22px; height: 22px; fill: var(--purple); }
+.brand-text strong { display: block; font-size: 18px; line-height: 1.2; }
+.brand-text span { display: block; font-size: 13px; opacity: 0.85; }
+.site-nav { display: flex; gap: 6px; }
+.site-nav a {
+  color: var(--white); text-decoration: none; font-weight: 600; font-size: 15px;
+  padding: 8px 14px; border-radius: 999px;
+}
+.site-nav a:hover, .site-nav a[aria-current="page"] { background: rgba(255, 255, 255, 0.16); }
+
+/* ---------- Hero ---------- */
+.hero { background: var(--lavender); border-bottom: 1px solid var(--line); }
+.hero .container { padding-block: 52px 40px; display: grid; gap: 16px; justify-items: center; text-align: center; }
+.hero h1 { margin: 0; font-size: clamp(28px, 4.5vw, 44px); line-height: 1.15; color: var(--purple-dark); }
+.hero p { margin: 0; max-width: 60ch; color: var(--muted); font-size: 18px; }
+.hero-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+
+/* ---------- Search + filters ---------- */
+.toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: center; width: min(100%, 760px); margin-top: 14px; }
+.search {
+  flex: 1 1 320px; display: flex; align-items: center; gap: 10px;
+  background: var(--white); border: 2px solid var(--line); border-radius: 999px;
+  padding: 4px 8px 4px 16px;
+}
+.search:focus-within { border-color: var(--purple); }
+.search svg { width: 20px; height: 20px; flex: none; stroke: var(--muted); fill: none; stroke-width: 2; }
+.search input { flex: 1; min-width: 0; border: 0; outline: none; font: inherit; padding: 10px 0; background: transparent; }
+.select {
+  font: inherit; font-weight: 600; color: var(--ink);
+  border: 2px solid var(--line); background: var(--white);
+  border-radius: 999px; padding: 10px 16px; cursor: pointer;
+}
+.select:focus { border-color: var(--purple); outline: none; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  font: inherit; font-weight: 700; text-decoration: none; cursor: pointer;
+  border-radius: 999px; padding: 10px 18px; border: 2px solid var(--purple);
+  background: var(--white); color: var(--purple);
+}
+.btn:hover { background: var(--lavender); }
+.btn-primary { background: var(--purple); color: var(--white); }
+.btn-primary:hover { background: var(--purple-dark); }
+.btn[hidden] { display: none; }
+
+/* ---------- Results ---------- */
+main { padding-block: 28px 56px; }
+.results-count { color: var(--muted); margin: 0 0 8px; }
+.semester-group { margin-top: 26px; }
+.semester-group h2 { font-size: 22px; margin: 0 0 16px; color: var(--purple-dark); display: flex; align-items: baseline; gap: 10px; }
+.semester-group h2 span { font-size: 14px; color: var(--muted); font-weight: 400; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 26px; }
+
+/* ---------- Game cards (green design) ---------- */
+.card {
+  position: relative; display: flex; flex-direction: column; background: var(--white);
+  border: 1px solid #EFEDF1; border-radius: 12px; overflow: hidden;
+  box-shadow: var(--shadow); transition: transform .15s ease, box-shadow .15s ease;
+}
+.card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+.card-img { aspect-ratio: 3 / 2; width: 100%; background: var(--green-img); overflow: hidden; }
+.card-img img {
+  width: 100%; height: 100%; object-fit: cover;
+  filter: grayscale(100%);
+  mix-blend-mode: multiply;  /* tints the picture with the green behind it */
+  opacity: 0.45;             /* very faded */
+  transition: opacity .2s ease;
+}
+.card:hover .card-img img { opacity: 0.65; }
+.card-body { padding: 22px 22px 24px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.card-title { margin: 0; font-size: 20px; font-weight: 600; color: var(--ink); }
+.card-meta { margin: -4px 0 0; font-size: 14px; color: var(--muted); }
+.card-desc { margin: 0; font-size: 15px; color: var(--muted); flex: 1; }
+.card-link {
+  align-self: flex-start; margin-top: 6px; font-size: 15px; font-weight: 500;
+  color: var(--ink); text-decoration: none;
+}
+.card-link:hover { color: var(--purple); }
+.card-link::after { content: ""; position: absolute; inset: 0; } /* whole card is clickable */
+.soon { margin-top: 6px; font-size: 14px; color: var(--muted); font-style: italic; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: var(--lavender); color: var(--purple); }
+
+.empty {
+  text-align: center; padding: 48px 20px; border: 2px dashed var(--line);
+  border-radius: var(--radius); color: var(--muted); background: var(--white);
+}
+.empty p { margin: 0 0 14px; }
+
+/* ---------- Game page ---------- */
+.back { display: inline-flex; gap: 6px; font-weight: 700; text-decoration: none; margin-bottom: 16px; }
+.game-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+.game-head h1 { margin: 0; font-size: clamp(26px, 4vw, 38px); color: var(--purple-dark); }
+.game-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.player {
+  position: relative; width: 100%; aspect-ratio: 16 / 10; background: #120D16;
+  border-radius: var(--radius); overflow: hidden;
+}
+.player iframe { width: 100%; height: 100%; border: 0; display: block; background: var(--white); }
+.note { font-size: 14px; color: var(--muted); margin: 10px 0 0; }
+.game-info { display: grid; grid-template-columns: 2fr 1fr; gap: 28px; margin-top: 28px; }
+.game-info h2 { font-size: 20px; margin: 0 0 8px; }
+.game-info p { margin: 0; max-width: 65ch; }
+.details { margin: 0; display: grid; gap: 4px; font-size: 15px; }
+.details dt { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-top: 8px; }
+.details dd { margin: 0; }
+@media (max-width: 720px) { .game-info { grid-template-columns: 1fr; } }
+
+/* ---------- About page ---------- */
+.prose { max-width: 70ch; }
+.prose h1 { color: var(--purple-dark); font-size: clamp(28px, 4vw, 40px); margin: 0 0 12px; }
+.prose h2 { color: var(--purple-dark); margin-top: 32px; }
+.steps { padding-left: 22px; }
+.steps li { margin-bottom: 8px; }
+
+/* ---------- Footer ---------- */
+.site-footer { border-top: 1px solid var(--line); background: var(--white); color: var(--muted); font-size: 14px; }
+.site-footer .container { padding-block: 28px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+.footer-logo { width: 220px; height: auto; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .card { transition: none; }
+  .card:hover { transform: none; }
+}
