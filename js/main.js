@@ -5,6 +5,41 @@
 
 const CSV_FILE = "games.csv";
 
+const GROUPED_VIEW = "__grouped";   // dropdown value for "all games, grouped"
+
+// The sustainability groupings, in the order they appear in the dropdown and on the page.
+const GROUPINGS = [
+  "Clean Energy & Climate",
+  "Nature & Biodiversity",
+  "Water & Natural Resources",
+  "Waste & Circular Economy",
+  "Sustainable Cities & Communities",
+  "Food & Agriculture",
+  "People & Social Sustainability",
+  "Sustainable Business & Innovation",
+];
+
+const STOCK_BY_GROUPING = {
+  "Clean Energy & Climate": "images/stock/cleanEnergy.jpg",
+  "Nature & Biodiversity": "images/stock/nature.jpg",
+  "Water & Natural Resources": "images/stock/water.jpg",
+  "Waste & Circular Economy": "images/stock/waste.jpg",
+  "Sustainable Cities & Communities": "images/stock/cities.jpg",
+  "Food & Agriculture": "images/stock/food.jpg",
+  "People & Social Sustainability": "images/stock/people.jpg",
+  "Sustainable Business & Innovation": "images/stock/business.jpg",
+  "Other": "images/stock/other.jpg",
+};
+function stockImageFor(g) {
+  return STOCK_BY_GROUPING[g.grouping] || STOCK_BY_GROUPING["Other"];
+}
+
+// Match a CSV value to an official grouping (ignores capitalization and extra spaces).
+function normalizeGrouping(value) {
+  const v = (value || "").trim().toLowerCase();
+  return GROUPINGS.find(g => g.toLowerCase() === v) || "Other";
+}
+
 /* ---------- Load games.csv ---------- */
 
 // Turns CSV text into rows. Supports "quoted, values" with commas.
@@ -60,6 +95,7 @@ async function loadGames() {
       title: g.title,
       team: g.team,
       semester: g.semester || "Other",
+      grouping: normalizeGrouping(g.grouping),
       department: g.department,
       tags: (g.tags || "").split(",").map(t => t.trim()).filter(Boolean),
       description: g.description,
@@ -89,14 +125,16 @@ function el(tag, attrs = {}, ...children) {
   return node;
 }
 
-// Game picture shown faded under a green tint. Plain green for coming games for now.
 function gameImage(g) {
   const box = el("div", { class: "card-img", "aria-hidden": "true" });
-  if (g.image) {
-    const img = el("img", { src: g.image, alt: "", loading: "lazy" });
-    img.addEventListener("error", () => img.remove(), { once: true });
-    box.append(img);
-  }
+  const src = g.image || stockImageFor(g);
+  const img = el("img", { src, alt: "", loading: "lazy" });
+  img.addEventListener("error", () => {
+    // If the game's own image fails, try the stock one; if that fails too, remove it.
+    if (g.image && img.src.indexOf("images/stock/") === -1) img.src = stockImageFor(g);
+    else img.remove();
+  });
+  box.append(img);
   return box;
 }
 
@@ -111,7 +149,7 @@ async function initHome() {
   const results = document.getElementById("results");
   const search = document.getElementById("search");
   const deptSelect = document.getElementById("department");
-  const semSelect = document.getElementById("semester");
+  const groupSelect = document.getElementById("grouping");
   const clearBtn = document.getElementById("clear");
   const count = document.getElementById("count");
 
@@ -119,17 +157,19 @@ async function initHome() {
   try { games = await loadGames(); }
   catch { loadError(results); return; }
 
-  // Fill the filter dropdowns from whatever is in the CSV.
+  // Fill the dropdowns from whatever is in the CSV ("Other" always last).
   const departments = [...new Set(games.map(g => g.department).filter(Boolean))].sort();
-  const semesters = [...new Set(games.map(g => g.semester))].sort((a, b) => semesterRank(b) - semesterRank(a));
+    // Always show the official groupings; add "Other" only if some game needs it.
+  const groupings = games.some(g => g.grouping === "Other") ? [...GROUPINGS, "Other"] : GROUPINGS;
   if (deptSelect) departments.forEach(d => deptSelect.append(el("option", { value: d, text: d })));
-  semesters.forEach(s => semSelect.append(el("option", { value: s, text: s })));
+  groupings.forEach(s => groupSelect.append(el("option", { value: s, text: s })));
 
   // Restore filters from the address bar, so filtered views can be shared.
   const params = new URLSearchParams(location.search);
   search.value = params.get("q") || "";
   if (deptSelect && departments.includes(params.get("dept"))) deptSelect.value = params.get("dept");
-  if (semesters.includes(params.get("sem"))) semSelect.value = params.get("sem");
+    if (groupings.includes(params.get("group")) || params.get("group") === GROUPED_VIEW)
+      groupSelect.value = params.get("group");
 
   function card(g) {
     return el("article", { class: "card" },
@@ -150,20 +190,21 @@ async function initHome() {
   function render() {
     const q = search.value.trim().toLowerCase();
     const dept = deptSelect ? deptSelect.value : "";
-    const sem = semSelect.value;
+    const group = groupSelect.value;
+    const grouped = group === GROUPED_VIEW;
 
     const matches = games.filter(g =>
       (!q || [g.title, g.team, g.description, ...g.tags].join(" ").toLowerCase().includes(q)) &&
       (!dept || g.department === dept) &&
-      (!sem || g.semester === sem));
+      (!group || grouped || g.grouping === group));
 
     count.textContent = `Showing ${matches.length} of ${games.length} games`;
-    clearBtn.hidden = !(q || dept || sem);
+    clearBtn.hidden = !(q || dept || group);
 
     const next = new URLSearchParams();
     if (q) next.set("q", search.value.trim());
     if (dept) next.set("dept", dept);
-    if (sem) next.set("sem", sem);
+    if (group) next.set("group", group);
     history.replaceState(null, "", next.toString() ? "?" + next : location.pathname);
 
     if (!matches.length) {
@@ -173,26 +214,33 @@ async function initHome() {
       return;
     }
 
-    // Group by semester, newest first.
-    results.replaceChildren(...semesters
-      .filter(s => matches.some(g => g.semester === s))
-      .map(s => {
-        const list = matches.filter(g => g.semester === s);
-        return el("section", { class: "semester-group", "aria-label": s },
-          el("h2", {}, s + " ", el("span", { text: `${list.length} ${list.length === 1 ? "game" : "games"}` })),
-          el("div", { class: "grid" }, list.map(card)));
-      }));
+      if (grouped) {
+          // All games under a heading for each grouping, newest semester first within each.
+          results.replaceChildren(...groupings
+            .filter(s => matches.some(g => g.grouping === s))
+            .map(s => {
+              const list = matches.filter(g => g.grouping === s)
+                .sort((a, b) => semesterRank(b.semester) - semesterRank(a.semester));
+              return el("section", { class: "semester-group", "aria-label": s },
+                el("h2", {}, s + " ", el("span", { text: `${list.length} ${list.length === 1 ? "game" : "games"}` })),
+                el("div", { class: "grid" }, list.map(card)));
+            }));
+        } else {
+          // One grid with every matching game, newest semester first.
+          const sorted = [...matches].sort((a, b) => semesterRank(b.semester) - semesterRank(a.semester));
+          results.replaceChildren(el("div", { class: "grid" }, sorted.map(card)));
+        }
   }
 
   function clearAll() {
-    search.value = ""; semSelect.value = "";
+    search.value = ""; groupSelect.value = "";
     if (deptSelect) deptSelect.value = "";
     render(); search.focus();
   }
 
   search.addEventListener("input", render);
   deptSelect?.addEventListener("change", render);
-  semSelect.addEventListener("change", render);
+  groupSelect.addEventListener("change", render);
   clearBtn.addEventListener("click", clearAll);
   render();
 }
