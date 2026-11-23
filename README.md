@@ -19,7 +19,7 @@ game.html      Plays one game (opened from "Play Game")
 about.html     About + how students submit
 games.csv      THE LIST OF GAMES (edit this to add/delete games)
 css/style.css  Design and colors
-js/main.js     Reads games.csv and builds the cards
+js/            Code, split into classes (one job per file) so it's easier to maintain
 ```
 
 ## TODO (first draft)
