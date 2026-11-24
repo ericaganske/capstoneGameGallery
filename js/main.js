@@ -10,7 +10,8 @@ import { HomePageController } from "./controllers/HomePageController.js";
 import { GamePageController } from "./controllers/GamePageController.js";
 
 const page = document.body.dataset.page;
-const loader = new DataLoader("games.csv");
+const loader = new DataLoader(["data/projects.json]", "data/sample-projects.json"]);
+
 
 if (page === "home") new HomePageController(loader).init();
 if (page === "game") new GamePageController(loader).init();
