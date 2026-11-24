@@ -1,17 +1,80 @@
 [
   {
+    "title": "Trash Sort",
+    "grouping": "Waste & Circular Economy",
+    "team": "Spring 2026 Capstone",
+    "semester": "Spring 2026",
+    "tags": [
+      "recycling",
+      "campus"
+    ],
+    "description": "Sort trash at familiar St. Thomas locations!",
+    "image": "images/trash-sort.jpg",
+    "url": "https://sp26-sust-init.onrender.com/Game1/index.html"
+  },
+  {
+    "title": "Fridge Sort",
+    "grouping": "Food & Agriculture",
+    "team": "Spring 2026 Capstone",
+    "semester": "Spring 2026",
+    "tags": [
+      "food",
+      "waste"
+    ],
+    "description": "Place all items correctly in the fridge!",
+    "image": "images/fridge-sort.jpg",
+    "url": "https://sp26-sust-init.onrender.com/Game2/index.html"
+  },
+  {
     "title": "Day in the Life",
     "grouping": "People & Social Sustainability",
-    "team": "Amber Kraft, Kitty Marsh, Elijah Parkos, Branden Shaffa",
-    "semester": "Fall",
+    "team": "Spring 2026 Capstone",
+    "semester": "Spring 2026",
     "tags": [
-      "sustainability",
-      "education",
-      "story",
-      "interactive fiction"
+      "campus",
+      "habits"
     ],
-    "description": "Follow a story and decide which actions are the most sustainable. Receive feedback on your choices and learn about what makes your choices sustainable or not.",
-    "image": "https://i.imgur.com/96AqoEB.png",
-    "url": "https://elijahparkos.github.io/CISC480-Day-in-the-Life/"
+    "description": "Experience the day in the life of a sustainable St. Thomas student!",
+    "image": "images/day-in-the-life.jpg",
+    "url": "https://sp26-sust-init.onrender.com/Game3/index.html"
+  },
+  {
+    "title": "Student Game One",
+    "grouping": "Clean Energy & Climate",
+    "team": "Fall 2026 Capstone",
+    "semester": "Fall 2026",
+    "tags": [
+      "tag 1",
+      "tag 2"
+    ],
+    "description": "Short description of the game goes here. Replace with the real text.",
+    "image": "",
+    "url": ""
+  },
+  {
+    "title": "Student Game Two",
+    "grouping": "Sustainable Business & Innovation",
+    "team": "Fall 2026 Capstone",
+    "semester": "Fall 2026",
+    "tags": [
+      "tag 1",
+      "tag 2"
+    ],
+    "description": "Short description of the game goes here. Replace with the real text.",
+    "image": "",
+    "url": ""
+  },
+  {
+    "title": "Student Game Three",
+    "grouping": "Sustainable Cities & Communities",
+    "team": "Fall 2026 Capstone",
+    "semester": "Fall 2026",
+    "tags": [
+      "tag 1",
+      "tag 2"
+    ],
+    "description": "Short description of the game goes here. Replace with the real text.",
+    "image": "",
+    "url": ""
   }
 ]
