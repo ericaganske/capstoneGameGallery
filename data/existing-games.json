@@ -1,0 +1,17 @@
+[
+  {
+    "title": "Day in the Life",
+    "grouping": "People & Social Sustainability",
+    "team": "Amber Kraft, Kitty Marsh, Elijah Parkos, Branden Shaffa",
+    "semester": "Fall",
+    "tags": [
+      "sustainability",
+      "education",
+      "story",
+      "interactive fiction"
+    ],
+    "description": "Follow a story and decide which actions are the most sustainable. Receive feedback on your choices and learn about what makes your choices sustainable or not.",
+    "image": "https://i.imgur.com/96AqoEB.png",
+    "url": "https://elijahparkos.github.io/CISC480-Day-in-the-Life/"
+  }
+]

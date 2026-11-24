@@ -1,72 +1,74 @@
 /* ==========================================================
    DataLoader
-   Reads games.csv and turns each row into a Game.
+   Reads the game lists in data/ and turns each entry into a Game.
    The only class that knows where the data comes from.
+   - data/games.json           games from approved GitHub issues (written automatically)
+   - data/existing-games.json  games added before the form existed
    ========================================================== */
 
 import { Game } from "../models/Game.js";
 import { Grouping } from "../models/Grouping.js";
 
 export class DataLoader {
-  constructor(csvFile = "games.csv") {
-    this.csvFile = csvFile;
+  constructor(files = ["data/games.json", "data/existing-games.json"]) {
+    this.files = files;
   }
 
-  // Fetch the CSV and return a list of Game objects.
+  // Fetch every list and return one list of Game objects.
+  // A missing or broken file is skipped; if nothing could be read, it throws.
   async loadGames() {
-    const res = await fetch(this.csvFile, { cache: "no-cache" });
-    if (!res.ok) throw new Error("Could not load " + this.csvFile);
-    const rows = DataLoader.parseCSV(await res.text());
-    const headers = rows.shift().map(h => h.trim().toLowerCase());
+    const lists = await Promise.all(this.files.map(f => DataLoader.loadList(f)));
+    if (lists.every(l => l === null)) throw new Error("Could not load the game lists");
     const seen = {};
 
-    return rows.map(cells => {
-      const row = {};
-      headers.forEach((h, i) => (row[h] = (cells[i] || "").trim()));
-      if (!row.title) return null; // skip lines with no title
+    return lists.flat().filter(Boolean).map(entry => {
+      if (typeof entry !== "object") return null;
+      const title = DataLoader.text(entry.title);
+      if (!title) return null; // a game needs at least a title
 
       // Same title twice -> the second one gets "-2", and so on.
-      let id = DataLoader.slugify(row.title);
+      let id = DataLoader.slugify(title);
       seen[id] = (seen[id] || 0) + 1;
       if (seen[id] > 1) id += "-" + seen[id];
 
       return new Game({
         id,
-        title: row.title,
-        team: row.team,
-        semester: row.semester || "Other",
-        grouping: Grouping.fromValue(row.grouping),
-        department: row.department,
-        tags: (row.tags || "").split(",").map(t => t.trim()).filter(Boolean),
-        description: row.description,
-        image: row.image,
-        url: DataLoader.safeUrl(row.url),
+        title,
+        team: DataLoader.text(entry.team),
+        semester: DataLoader.text(entry.semester) || "Other",
+        grouping: Grouping.fromValue(entry.grouping),
+        department: DataLoader.text(entry.department),
+        tags: DataLoader.tags(entry.tags),
+        description: DataLoader.text(entry.description),
+        image: DataLoader.text(entry.image),
+        url: DataLoader.safeUrl(DataLoader.text(entry.url)),
       });
     }).filter(Boolean);
   }
 
-  // Turns CSV text into rows. Supports "quoted, values" with commas.
-  static parseCSV(text) {
-    const rows = [];
-    let row = [], field = "", inQuotes = false;
-    for (let i = 0; i < text.length; i++) {
-      const c = text[i];
-      if (inQuotes) {
-        if (c === '"' && text[i + 1] === '"') { field += '"'; i++; }
-        else if (c === '"') inQuotes = false;
-        else field += c;
-      } else if (c === '"') inQuotes = true;
-      else if (c === ",") { row.push(field); field = ""; }
-      else if (c === "\n" || c === "\r") {
-        if (c === "\r" && text[i + 1] === "\n") i++;
-        row.push(field); rows.push(row); row = []; field = "";
-      } else field += c;
+  // One JSON list, or null if it can't be read.
+  static async loadList(file) {
+    try {
+      const res = await fetch(file, { cache: "no-cache" });
+      if (!res.ok) return null;
+      const data = await res.json();
+      return Array.isArray(data) ? data : null;
+    } catch {
+      return null;
     }
-    if (field || row.length) { row.push(field); rows.push(row); }
-    return rows.filter(r => r.some(cell => cell.trim()));
   }
 
-  // "Trash Sort!" -> "trash-sort"
+  static text(value) {
+    return typeof value === "string" ? value.trim() : typeof value === "number" ? String(value) : "";
+  }
+
+  // Tags can be a list or a comma-separated string; stray quotes are removed.
+  static tags(value) {
+    const list = Array.isArray(value) ? value : DataLoader.text(value).split(",");
+    return list.map(t => DataLoader.text(t).replace(/^["']+|["']+$/g, "").trim()).filter(Boolean);
+  }
+
+  // "Trash Sort!" -> "trash-sort", used in game.html?id=...
   static slugify(text) {
     return text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "game";
   }

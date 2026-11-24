@@ -1,0 +1,47 @@
+# Rebuilds data/games.json from the approved game issues.
+# Runs automatically when a game issue is approved, edited, closed or un-approved.
+name: Update gallery games
+
+on:
+  issues:
+    types: [opened, edited, labeled, unlabeled, closed, reopened, deleted]
+  workflow_dispatch: # lets you run it by hand from the Actions tab
+
+permissions:
+  contents: write # to save data/games.json and pictures
+  issues: write   # to comment on the issue and create labels
+
+concurrency:
+  group: update-games
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build games.json from approved issues
+        run: node scripts/update-games.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          EVENT_ACTION: ${{ github.event.action }}
+          EVENT_LABEL: ${{ github.event.label.name }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+
+      - name: Save changes
+        run: |
+          git config user.name "gallery-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/games.json images/games
+          if git diff --cached --quiet; then
+            echo "No changes to save."
+          else
+            git commit -m "Update gallery games"
+            git push
+          fi

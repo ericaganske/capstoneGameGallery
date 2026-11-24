@@ -17,16 +17,22 @@ A static website (HTML, CSS, JavaScript, no backend) that shows student-made sus
 index.html     Gallery page: search, semester filter, game cards
 game.html      Plays one game (opened from "Play Game")
 about.html     About + how students submit
-games.csv      THE LIST OF GAMES (edit this to add/delete games)
+data/          The list of games (built automatically from approved game submissions)
 css/style.css  Design and colors
 js/            Code, split into classes (one job per file) so it's easier to maintain
 ```
 
+## Add or remove a game
+
+Students submit a game with **Issues → New issue → Submit a game**. An admin adds the **approved**
+label and the game appears on the gallery within a minute or two. To remove a game, remove the label
+or close the issue.
+
 ## TODO (first draft)
 
-- [ ] Match exact UST colors
+- [x] Match exact UST colors
 - [ ] Add the Office's contact info on the About page
-- [ ] Write the real About page
+- [x] Write the real About page
 - [ ] Replace placeholder games with real ones
 - [ ] Add instructions for the Office
 - [ ] Later: Office Tool
