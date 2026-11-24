@@ -63,11 +63,15 @@ async function ensureLabel(name, color, description) {
   await gh(`/repos/${REPO}/labels`, { method: "POST", body: JSON.stringify({ name, color, description }) }); // 422 = already exists
 }
 
+// Label names are compared without caring about capitals ("Approved" = "approved").
+const labelNames = issue => (issue.labels || []).map(l => (typeof l === "string" ? l : l.name).toLowerCase());
+const sameLabel = (a, b) => (a || "").toLowerCase() === (b || "").toLowerCase();
+
 async function approvedIssues() {
   const all = [];
   for (let page = 1; ; page++) {
-    const batch = await gh(`/repos/${REPO}/issues?state=open&labels=${encodeURIComponent(APPROVED)}&per_page=100&page=${page}`);
-    all.push(...batch.filter(i => !i.pull_request));
+    const batch = await gh(`/repos/${REPO}/issues?state=open&per_page=100&page=${page}`);
+    all.push(...batch.filter(i => !i.pull_request && labelNames(i).includes(APPROVED)));
     if (batch.length < 100) return all;
   }
 }
@@ -208,7 +212,7 @@ async function main() {
 
 async function notify(results) {
   const issue = await gh(`/repos/${REPO}/issues/${ISSUE_NUMBER}`);
-  const labels = (issue.labels || []).map(l => (typeof l === "string" ? l : l.name));
+  const labels = labelNames(issue);
   const isApproved = issue.state === "open" && labels.includes(APPROVED);
   const isSubmission = labels.includes(SUBMISSION) || Object.keys(parseForm(issue.body)).length > 0;
   if (!isSubmission) return;
@@ -224,7 +228,7 @@ async function notify(results) {
       await comment(ISSUE_NUMBER, "✅ This game is now on the gallery. It can take a minute or two to show up." +
         (r.warnings.length ? "\n\nNote:\n" + r.warnings.map(w => `- ${w}`).join("\n") : ""));
     }
-  } else if ((EVENT_ACTION === "unlabeled" && EVENT_LABEL === APPROVED) || EVENT_ACTION === "closed") {
+  } else if ((EVENT_ACTION === "unlabeled" && sameLabel(EVENT_LABEL, APPROVED)) || EVENT_ACTION === "closed") {
     await comment(ISSUE_NUMBER, "This game was removed from the gallery. Add the **approved** label again (and reopen the issue if it's closed) to bring it back.");
   }
 }
